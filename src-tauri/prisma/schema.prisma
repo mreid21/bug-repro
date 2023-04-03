@@ -1,0 +1,36 @@
+datasource db {
+    provider = "sqlite"
+    url      = "file:../../dev.db"
+}
+
+generator client {
+    provider = "cargo prisma"
+    output   = "../src/prisma.rs"
+}
+
+model Deck {
+    id      Int    @id @default(autoincrement())
+    name   String
+    cards  Card[]
+}
+
+model Card {
+    id Int @id @default(autoincrement())
+    frontContent String
+    backContent String
+    createdAt DateTime @default(now())
+    deckId Int
+    deck Deck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+    review Review?
+}
+
+
+model Review {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    nextReview DateTime?
+    incorrectCount Int @default(0)
+    reviewStage Int @default(1)
+    cardId Int @unique
+    card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+}
